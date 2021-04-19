@@ -127,7 +127,7 @@ while True:
             if events.key == pygame.K_LEFT and core.snake.direction != Vector2(1, 0):
                 core.snake.direction = Vector2(-1, 0)
 
-    screen.fill((175, 215, 70))
+    screen.fill((0, 0, 0))
     core.pls_draw_snake()
     core.pls_draw_dots()
     pygame.display.update()
