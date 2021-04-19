@@ -5,10 +5,11 @@ from pygame import Rect
 from pygame.math import Vector2
 from random import randint
 
+
 """
 Mixer imported for Sound  
 
-1>. Creating a Grid by making small squares/rects will cause issues in separate file
+1>. Creating a Grid by making small squares/ ret will cause issues in separate file
 2>. Creating Food for the snake using a dot class
 """
 
@@ -45,11 +46,14 @@ class Body:
         self.direction = Vector2(1, 0)
 
     def draw_(self):
-        for blocks in self.body:
+        for index, blocks in enumerate(self.body):
             x_pos = int(blocks.x * 48)
             y_pos = int(blocks.y * 48)
             blk = Rect(x_pos, y_pos, 48, 48)
-            pygame.draw.rect(screen, (255, 100, 0), blk)
+            if index == 0:
+                pygame.draw.rect(screen, (255, 0, 0), blk)
+            else:
+                pygame.draw.rect(screen, (255, 100, 0), blk)
 
     def move(self):
         body = self.body[:-1]
@@ -69,7 +73,7 @@ class Core:
 
     def pls_move_snake(self):
         self.snake.move()
-        self.check_collison_dots_snake()
+        self.check_collision_dots_snake()
         self.check_collision_body()
         self.check_collision_wall()
 
@@ -79,26 +83,36 @@ class Core:
     def pls_draw_dots(self):
         self.dots.draw_dot()
 
-    def check_collison_dots_snake(self):
+    def check_collision_dots_snake(self):
+        """play a sound here"""
         if self.dots.pos == self.snake.body[0]:
             self.dots.random_DOT()
             self.snake.add_part()
 
     def check_collision_body(self):
+        """PLAY A SOUND HERE"""
         for parts in self.snake.body[1:]:
             if parts == self.snake.body[0]:
                 print("COLLISION")
 
     def check_collision_wall(self):
+        """PLAY A SOUND HERE"""
         if not 0 <= self.snake.body[0].x < cell_number or not 0 <= self.snake.body[0].y < cell_number:
             print("WALL")
 
+
+white = (255, 255, 255)
+green = (0, 255, 0)
+blue = (0, 0, 128)
 
 pygame.init()
 screen = pygame.display.set_mode((800, 800))
 pygame.display.set_caption("Snake")
 clock = pygame.time.Clock()
+font = pygame.font.Font("assets/LazenbyCompSmooth.ttf", 100)
 
+text = font.render('GeeksForGeeks', True, white)
+textRect = text.get_rect()
 
 core = Core()
 
@@ -106,6 +120,7 @@ Custom_event = pygame.USEREVENT
 pygame.time.set_timer(Custom_event, 120)
 
 while True:
+
     for events in pygame.event.get():
         if events.type == pygame.QUIT:
             pygame.quit()
@@ -127,7 +142,13 @@ while True:
             if events.key == pygame.K_LEFT and core.snake.direction != Vector2(1, 0):
                 core.snake.direction = Vector2(-1, 0)
 
+    test_score = str(len(core.snake.body)*10)
+    text_ = f"SCORE:{test_score}"
+    text = font.render(text_, True, white)
+    textRect = text.get_rect()
+    # screen.fill((175, 215, 70))
     screen.fill((0, 0, 0))
+    screen.blit(text, textRect)
     core.pls_draw_snake()
     core.pls_draw_dots()
     pygame.display.update()
