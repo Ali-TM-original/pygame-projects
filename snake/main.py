@@ -1,17 +1,17 @@
 import sys
+from random import randint
+from random import randrange
 
 import pygame
 from pygame import Rect
 from pygame.math import Vector2
-from random import randint
-
 
 """
 Mixer imported for Sound  
 
 1>. Creating a Grid by making small squares/ ret will cause issues in separate file
 2>. Creating Food for the snake using a dot class
-3>. Body Class to create sname body
+3>. Trying to create Particles
 """
 
 cell_size = 48
@@ -51,14 +51,12 @@ class Body:
             x_pos = int(blocks.x * 48)
             y_pos = int(blocks.y * 48)
             blk = Rect(x_pos, y_pos, 48, 48)
-            """THE FIRST BLOCK NEEDS TO BE OF DIFFERENT COLOR THAN THE REST"""
             if index == 0:
                 pygame.draw.rect(screen, (255, 0, 0), blk)
             else:
                 pygame.draw.rect(screen, (255, 100, 0), blk)
 
     def move(self):
-        """REPLACING THE BLOCKS"""
         body = self.body[:-1]
         body.insert(0, body[0] + self.direction)
         self.body = body[:]
@@ -77,6 +75,7 @@ class Core:
     def __init__(self):
         self.snake = Body()
         self.dots = Dots()
+        self.rain_list = []
 
     def pls_move_snake(self):
         self.snake.move()
@@ -107,9 +106,24 @@ class Core:
                 self.game_over()
 
     def check_collision_wall(self):
-        """PLAY A SOUND HERE"""
-        if not 0 <= self.snake.body[0].x < cell_number - 3 or not 0 <= self.snake.body[0].y < cell_number:
-            self.game_over()
+        """CHANGE DIRECTION"""
+        if not 0 <= self.snake.body[0].x < cell_number - 3:
+            for index, blocks in enumerate(self.snake.body):
+                x_pos = int(blocks.x * 48)
+                if x_pos > 800:
+                    blocks.x = 0
+                if blocks.x < -1.0:
+                    blocks.x = 17
+            # self.game_over()
+        if not 0 <= self.snake.body[0].y < cell_number:  # this is for Y
+            for index, blocks in enumerate(self.snake.body):
+                y_pos = int(blocks.y * 48)
+                if y_pos > 800:
+                    blocks.y = 0
+                if blocks.y < -1.0:
+                    blocks.y = 20
+
+            # self.game_over()
 
     def game_over(self):
         self.snake.reset()
@@ -131,7 +145,7 @@ textRect = text.get_rect()
 core = Core()
 
 Custom_event = pygame.USEREVENT
-pygame.time.set_timer(Custom_event, 60)
+pygame.time.set_timer(Custom_event, 120)
 
 while True:
 
@@ -156,7 +170,7 @@ while True:
             if events.key == pygame.K_LEFT and core.snake.direction != Vector2(1, 0):
                 core.snake.direction = Vector2(-1, 0)
 
-    test_score = str(len(core.snake.body)*10)
+    test_score = str(len(core.snake.body) * 10)
     text_ = f"SCORE:{test_score}"
     text = font.render(text_, True, white)
     textRect = text.get_rect()
